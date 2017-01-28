@@ -1,7 +1,7 @@
 FROM continuumio/miniconda
 
 # By keeping a lot of discrete steps in a single RUN we can clean up after
-# ourselves in the same layer. This is gross but it saves ~100MB in the image
+# ourselves in the same layer. This is gross but it saves space
 RUN set -ex \
     && apt-get update -yqq \
     && apt-get install -y lsb-release binutils \
@@ -10,6 +10,9 @@ RUN set -ex \
     # create r environment \
     && conda create -n r -c r -c conda-forge r-base openjdk gcc \
     && mv /opt/conda/envs/r/include/include/* /opt/conda/envs/r/include \
+    # \
+    # javareconf R.
+    && bash -c 'source activate r && R CMD javareconf' \
     # \
     # clean up to minimize image layer size
     && rm -rf /var/lib/apt/lists/* \
