@@ -6,14 +6,18 @@ RUN set -ex \
     && apt-get update -yqq \
     && apt-get install -y lsb-release binutils \
     && apt-get install -y libc-dev libcloog-isl4 libmpfr4 libmpc3 make \
+    && apt-get install -y vim \
+    # \
+    # update conda \
+    && conda update conda -y \
     # \
     # create r environment \
-    && conda create -n r -c r -c conda-forge r-base openjdk gcc \
-    && mv /opt/conda/envs/r/include/include/* /opt/conda/envs/r/include \
+    && conda create -y -n r -c r gcc openjdk r-base r-rjava \
+    && conda clean --tarballs --packages \
     # \
-    # javareconf R.
+    # javareconf R \
     && bash -c 'source activate r && R CMD javareconf' \
     # \
-    # clean up to minimize image layer size
+    # clean up to minimize image layer size \
     && rm -rf /var/lib/apt/lists/* \
-    && apt-get purge -y --auto-remove $buildDeps \
+    && apt-get purge -y --auto-remove $buildDeps
