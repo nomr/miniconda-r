@@ -18,13 +18,17 @@ RUN set -ex \
     && conda update conda -y \
     # \
     # create R environment \
-    && conda create -y -n r -c r gcc openjdk r-essentials r-rjava \
+    && conda create -y -n r -c r gcc r-essentials r-rjava \
+    && conda install -y -n r -c conda-forge openjdk \
     && conda clean --tarballs --packages
 
 # Set shell to BASH so we can source activate r and continue the rest of the work.
 SHELL [ "/bin/bash", "-ce" ]
-
-# This fails, libjvm.so was not linked to rJava using rpath
-RUN source activate r \
+RUN set -ex \
+    # \
+    && source activate r \
     && R CMD javareconf \
     && R -e 'library(rJava)'
+
+
+
